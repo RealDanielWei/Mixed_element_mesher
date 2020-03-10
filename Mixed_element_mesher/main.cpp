@@ -17,13 +17,9 @@ int main() {
 	Mixed_mesher_2d::V2d shift(-0.0056 - N_pad * delta, -0.0146 - N_pad * delta);
 	Mixed_mesher_2d::Grid2d grid(x_p_list, y_p_list, shift);
 
-	Mixed_mesher_2d::Polygon mypolygon3("poly3.polyrecord");
-	Mixed_mesher_2d::Polygon mypolygon4("poly4.polyrecord");
-	Mixed_mesher_2d::Polygon mypolygon5("poly5.polyrecord");
-	
-	grid.register_polygon(mypolygon3);
-	grid.register_polygon(mypolygon4);
-	grid.register_polygon(mypolygon5);
+	grid.register_polygon("poly3.polyrecord");
+	grid.register_polygon("poly4.polyrecord");
+	grid.register_polygon("poly5.polyrecord");
 
 	grid.summarize();
 	grid.output_wrapping_polygons("gridpoly");

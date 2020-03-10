@@ -155,6 +155,28 @@ namespace Mixed_mesher_2d {
 			}
 		}
 
+		bool check_if_contains_a_polygon(const Polygon& poly) {
+			V2d test_point = 0.5 * (poly.points[0] + poly.points[1]);
+			return this->check_if_point_inside_polygon(test_point);
+		}
+
+		V2d get_one_inner_point() {
+			V2d p0 = this->points[0];
+			long i = 2;
+			V2d p = 0.5 * (p0 + this->points[i]);
+			while (!check_if_point_inside_polygon(p) && i < this->points.size() - 1) {
+				i++;
+				p = 0.5 * (p0 + this->points[i]);
+			}
+			if (i == this->points.size() - 1) {
+				cout << "Polygon::get_one_inner_point: cannot find such a point!" << endl;
+				return V2d(0.0, 0.0);
+			}
+			else {
+				return p;
+			}
+		}
+
 		void output_as_record(string filename) {
 			ofstream file(filename);
 			file << "0.0 0.000013" << endl;
@@ -180,8 +202,10 @@ namespace Mixed_mesher_2d {
 		vector<bool> extended_patch_shader_list;
 		vector<int> xedge_contour_marker;
 		vector<int> yedge_contour_marker;
+		vector<Polygon> registered_polygons;
 		vector<Polygon> wrapping_polygons;
-		vector<int> contour_polygon_cover_marker;
+		vector<int> contour_polygon_sign_marker;
+		vector<string> registered_polygon_file_names;
 
 		Grid2d(vector<double> x_p_list, vector<double> y_p_list, V2d shift) {
 			this->shift = shift;
@@ -290,8 +314,10 @@ namespace Mixed_mesher_2d {
 			return sp.idy * (this->Nx) + sp.idx;
 		}
 
-		void register_polygon(Polygon& poly) {
-			
+		void register_polygon(string polygonfilename) {
+			Polygon poly = Polygon(polygonfilename);
+			this->registered_polygons.push_back(poly);
+			this->registered_polygon_file_names.push_back(polygonfilename);
 			//set shader for points
 			for (long i = 0; i < this->Npoint; i++) {
 				if (poly.check_if_point_inside_polygon(this->get_point(i))) {
@@ -446,8 +472,22 @@ namespace Mixed_mesher_2d {
 			}
 			long xedge_id = -1;
 			while (this->get_one_xedge_of_unmarked_polygon(xedge_id)) {
-				this->wrapping_polygons.push_back(this->extract_and_mark_polygon_from_one_xedge(this->xedge_global_index_to_space_index(xedge_id), this->contour_polygon_cover_marker.size()));
-				this->contour_polygon_cover_marker.push_back(-1);
+				this->wrapping_polygons.push_back(this->extract_and_mark_polygon_from_one_xedge(this->xedge_global_index_to_space_index(xedge_id), this->contour_polygon_sign_marker.size()));
+				this->contour_polygon_sign_marker.push_back(-1);
+			}
+			for (long i = 0; i < this->contour_polygon_sign_marker.size(); i++) {
+				long parent_id = -1;
+				for (long j = 0; j < this->contour_polygon_sign_marker.size(); j++) {
+					if (j != i) {
+						if (this->wrapping_polygons[j].check_if_contains_a_polygon(this->wrapping_polygons[i])) {
+							parent_id = j;
+							continue;
+						}
+					}
+				}
+				if (parent_id != -1) {
+					this->contour_polygon_sign_marker[i] = parent_id;
+				}
 			}
 		}
 
@@ -470,6 +510,24 @@ namespace Mixed_mesher_2d {
 		}
 
 		void output_wrapping_polygons(string initial_string) {
+			//output meta data
+			ofstream metafile(initial_string + ".metapolyrecord");
+			for (long i = 0; i < this->wrapping_polygons.size(); i++) {
+				metafile << initial_string + to_string(i) + ".polyrecord";
+				if (this->contour_polygon_sign_marker[i] != -1) {
+					V2d p_inner = this->wrapping_polygons[i].get_one_inner_point();
+					metafile << " " << p_inner.x << " " << p_inner.y;
+				}
+				metafile << endl;
+			}
+			for (long i = 0; i < this->registered_polygons.size(); i++) {
+				metafile << this->registered_polygon_file_names[i];
+				V2d p_inner = this->registered_polygons[i].get_one_inner_point();
+				metafile << " " << p_inner.x << " " << p_inner.y;
+				metafile << endl;
+			}
+			metafile.close();
+			//output polygon records
 			for (long i = 0; i < this->wrapping_polygons.size(); i++) {
 				this->wrapping_polygons[i].output_as_record(initial_string + to_string(i) + ".polyrecord");
 			}
