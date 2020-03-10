@@ -32,6 +32,9 @@
     <ClInclude Include="mixed_mesher2d.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Triangle_interface.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">

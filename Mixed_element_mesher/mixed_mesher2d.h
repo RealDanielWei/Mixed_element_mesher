@@ -59,6 +59,7 @@ namespace Mixed_mesher_2d {
 		vector<V2d> points;
 
 		Polygon(string filename) {
+			double bar = 1e-6;
 			ifstream file(filename);
 			string str;
 			getline(file, str);  // ignore first line
@@ -67,7 +68,17 @@ namespace Mixed_mesher_2d {
 				double xp, yp;
 				istr >> xp;
 				istr >> yp;
+				V2d p_to_add(xp, yp);
+				if (this->points.size() != 0) {
+					V2d p_previous = this->points[this->points.size() - 1];
+					if (norm(p_previous - p_to_add) < bar) {
+						continue;
+					}
+				}
 				this->points.push_back(V2d(xp, yp));
+			}
+			if (norm(this->points[0] - this->points[this->points.size() - 1]) < bar) {
+				this->points.pop_back();
 			}
 		}
 
@@ -521,7 +532,7 @@ namespace Mixed_mesher_2d {
 				metafile << endl;
 			}
 			for (long i = 0; i < this->registered_polygons.size(); i++) {
-				metafile << this->registered_polygon_file_names[i];
+				metafile << "smooth_" + this->registered_polygon_file_names[i];
 				V2d p_inner = this->registered_polygons[i].get_one_inner_point();
 				metafile << " " << p_inner.x << " " << p_inner.y;
 				metafile << endl;
@@ -530,6 +541,9 @@ namespace Mixed_mesher_2d {
 			//output polygon records
 			for (long i = 0; i < this->wrapping_polygons.size(); i++) {
 				this->wrapping_polygons[i].output_as_record(initial_string + to_string(i) + ".polyrecord");
+			}
+			for (long i = 0; i < this->registered_polygons.size(); i++) {
+				this->registered_polygons[i].output_as_record("smooth_" + this->registered_polygon_file_names[i]);
 			}
 		}
 

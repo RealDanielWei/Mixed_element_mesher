@@ -1,5 +1,6 @@
 #include "mixed_mesher2d.h"
 #include "mesh2Dto3D.h"
+#include "Triangle_interface.h"
 int main() {
 	
 	long N_pad = 5;
@@ -23,6 +24,9 @@ int main() {
 
 	grid.summarize();
 	grid.output_wrapping_polygons("gridpoly");
+
+	Mixed_mesher_2d::dotPolyFile polyfile("gridpoly.metapolyrecord");
+	polyfile.output("mixed_ele.poly");
 	//grid.output_background_grid("background.2dmesh");
 	
 	//mesh2Dto3D::Mesh_2d mesh2d("poly5.1.node", "poly5.1.ele");

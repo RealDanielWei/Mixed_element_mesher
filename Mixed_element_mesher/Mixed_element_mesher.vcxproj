@@ -130,6 +130,7 @@
   <ItemGroup>
     <ClInclude Include="mesh2Dto3D.h" />
     <ClInclude Include="mixed_mesher2d.h" />
+    <ClInclude Include="Triangle_interface.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
