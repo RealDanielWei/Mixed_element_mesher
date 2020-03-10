@@ -27,9 +27,10 @@ int main() {
 
 	Mixed_mesher_2d::dotPolyFile polyfile("gridpoly.metapolyrecord");
 	polyfile.output("mixed_ele.poly");
-	//grid.output_background_grid("background.2dmesh");
 	
-	//mesh2Dto3D::Mesh_2d mesh2d("poly5.1.node", "poly5.1.ele");
-	//mesh2d.output_mesh("poly5.2dmesh");
+	grid.output_background_grid("background.2dmesh");
+	
+	//mesh2Dto3D::Mesh_2d mesh2d("mixed_ele.1.node", "mixed_ele.1.ele");
+	//mesh2d.output_mesh("mixed_ele.2dmesh");
 	system("pause");
 }

@@ -505,7 +505,7 @@ namespace Mixed_mesher_2d {
 		void output_background_grid(string filename) {
 			ofstream file(filename);
 			for (long i = 0; i < this->Npatch; i++) {
-				if (this->extended_patch_shader_list[i] == true) {
+				if (this->extended_patch_shader_list[i] == false) {
 					SpaceIndex2d sp = this->patch_global_index_to_space_index(i);
 					V2d p1 = this->get_point(sp.idx, sp.idy);
 					V2d p2 = this->get_point(sp.idx + 1, sp.idy);
