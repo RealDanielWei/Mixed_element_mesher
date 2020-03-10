@@ -123,6 +123,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <None Include="poly3.polyrecord" />
+    <None Include="poly4.polyrecord" />
+    <None Include="poly5.polyrecord" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="mesh2Dto3D.h" />
+    <ClInclude Include="mixed_mesher2d.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
