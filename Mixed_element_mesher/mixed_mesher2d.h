@@ -59,7 +59,7 @@ namespace Mixed_mesher_2d {
 		vector<V2d> points;
 
 		Polygon(string filename) {
-			double bar = 1e-6;
+			double bar = 3e-6;
 			ifstream file(filename);
 			string str;
 			getline(file, str);  // ignore first line
@@ -389,6 +389,14 @@ namespace Mixed_mesher_2d {
 			
 		}
 
+		void read_polygon_inputs() {
+			ifstream file("./inputs/input_list.info");
+			string str;
+			while (getline(file, str)) {
+				this->register_polygon("./inputs/" + str);
+			}
+		}
+
 		Polygon extract_and_mark_polygon_from_one_xedge(SpaceIndex2d sp, int polyid) {
 			vector<V2d> points;
 			vector<V2d> dummy;
@@ -520,11 +528,11 @@ namespace Mixed_mesher_2d {
 			file.close();
 		}
 
-		void output_wrapping_polygons(string initial_string) {
+		void output_wrapping_polygons() {
 			//output meta data
-			ofstream metafile(initial_string + ".metapolyrecord");
+			ofstream metafile("./outputs/polys.metapolyrecord");
 			for (long i = 0; i < this->wrapping_polygons.size(); i++) {
-				metafile << initial_string + to_string(i) + ".polyrecord";
+				metafile << "./outputs/gridpoly" + to_string(i) + ".polyrecord";
 				if (this->contour_polygon_sign_marker[i] != -1) {
 					V2d p_inner = this->wrapping_polygons[i].get_one_inner_point();
 					metafile << " " << p_inner.x << " " << p_inner.y;
@@ -532,18 +540,18 @@ namespace Mixed_mesher_2d {
 				metafile << endl;
 			}
 			for (long i = 0; i < this->registered_polygons.size(); i++) {
-				metafile << "smooth_" + this->registered_polygon_file_names[i];
-				V2d p_inner = this->registered_polygons[i].get_one_inner_point();
-				metafile << " " << p_inner.x << " " << p_inner.y;
+				metafile << "./outputs/inputpoly" + to_string(i) + ".polyrecord";
+				//V2d p_inner = this->registered_polygons[i].get_one_inner_point();
+				//metafile << " " << p_inner.x << " " << p_inner.y;
 				metafile << endl;
 			}
 			metafile.close();
 			//output polygon records
 			for (long i = 0; i < this->wrapping_polygons.size(); i++) {
-				this->wrapping_polygons[i].output_as_record(initial_string + to_string(i) + ".polyrecord");
+				this->wrapping_polygons[i].output_as_record("./outputs/gridpoly" + to_string(i) + ".polyrecord");
 			}
 			for (long i = 0; i < this->registered_polygons.size(); i++) {
-				this->registered_polygons[i].output_as_record("smooth_" + this->registered_polygon_file_names[i]);
+				this->registered_polygons[i].output_as_record("./outputs/inputpoly" + to_string(i) + ".polyrecord");
 			}
 		}
 
