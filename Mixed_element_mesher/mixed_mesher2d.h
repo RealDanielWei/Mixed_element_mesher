@@ -59,7 +59,7 @@ namespace Mixed_mesher_2d {
 		vector<V2d> points;
 
 		Polygon(string filename) {
-			double bar = 3e-6;
+			double bar = 2.5e-5;
 			ifstream file(filename);
 			string str;
 			getline(file, str);  // ignore first line
@@ -77,7 +77,7 @@ namespace Mixed_mesher_2d {
 				}
 				this->points.push_back(V2d(xp, yp));
 			}
-			if (norm(this->points[0] - this->points[this->points.size() - 1]) < bar) {
+			if (this->points.size()>0 && norm(this->points[0] - this->points[this->points.size() - 1]) < bar) {
 				this->points.pop_back();
 			}
 		}
@@ -327,6 +327,9 @@ namespace Mixed_mesher_2d {
 
 		void register_polygon(string polygonfilename) {
 			Polygon poly = Polygon(polygonfilename);
+			if (poly.points.size() < 3) {
+				return;
+			}
 			this->registered_polygons.push_back(poly);
 			this->registered_polygon_file_names.push_back(polygonfilename);
 			//set shader for points
@@ -365,6 +368,7 @@ namespace Mixed_mesher_2d {
 				bool cond_yedge1 = yedge_shader_list[this->yedge_space_index_to_global_index(SpaceIndex2d(sp.idx, sp.idy))];
 				bool cond_yedge2 = yedge_shader_list[this->yedge_space_index_to_global_index(SpaceIndex2d(sp.idx + 1, sp.idy))];
 				if (cond_p1 || cond_p2 || cond_p3 || cond_p4 || cond_xedge1 || cond_xedge2 || cond_yedge1 || cond_yedge2) {
+				//if (cond_xedge1 || cond_xedge2 || cond_yedge1 || cond_yedge2) {
 					this->patch_shader_list[i] = true;
 				}
 			}

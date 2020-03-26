@@ -69,6 +69,6 @@ def output_polys(index_list,string):
     of.close()
 
 
-#show_Poly([1,2,3,4,5])
+show_Poly([0])
 #output_ith_poly(2,"poly2.polyrecord")
-output_polys(range(175),"poly")
+#output_polys(range(175),"poly")

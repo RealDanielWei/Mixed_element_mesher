@@ -21,14 +21,38 @@ namespace Mixed_mesher_2d {
 
 		void add_record(string filename, int marker) {
 			Polygon poly(filename);
+			vector<Segment> temp_segments;
 			long Np_shift = this->vertices.size();
 			for (long i = 0; i < poly.points.size(); i++) {
 				this->vertices.push_back(poly.points[i]);
 				if (i == poly.points.size() - 1) {
-					this->segments.push_back(Segment(i + Np_shift, 0 + Np_shift));
+					temp_segments.push_back(Segment(i + Np_shift, 0 + Np_shift));
 				}
 				else {
-					this->segments.push_back(Segment(i + Np_shift, i + Np_shift + 1));
+					temp_segments.push_back(Segment(i + Np_shift, i + Np_shift + 1));
+				}
+			}
+			//check if there is overlaped segments
+			double bar = 1e-15;
+			vector<bool> seg_shaders = vector<bool>(temp_segments.size(), false);
+			for (long i = 0; i < temp_segments.size(); i++) {
+				V2d p1 = poly.points[temp_segments[i].p1 - Np_shift];
+				V2d p2 = poly.points[temp_segments[i].p2 - Np_shift];
+				for (long j = 0; j < temp_segments.size(); j++) {
+					if (j != i) {
+						V2d p3 = poly.points[temp_segments[j].p1 - Np_shift];
+						V2d p4 = poly.points[temp_segments[j].p2 - Np_shift];
+						bool cond1 = norm(p1 - p3) < bar && norm(p2 - p4) < bar;
+						bool cond2 = norm(p1 - p4) < bar && norm(p2 - p3) < bar;
+						if (cond1 || cond2) {
+							seg_shaders[i] = true;
+						}
+					}
+				}
+			}
+			for (long i = 0; i < temp_segments.size(); i++) {
+				if (seg_shaders[i] == false) {
+					this->segments.push_back(temp_segments[i]);
 				}
 			}
 		}

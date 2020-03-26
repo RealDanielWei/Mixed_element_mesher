@@ -15,6 +15,7 @@ def show_multiple_mesh_2d(meshfile_list,color_list):
     ax=fig.add_subplot(111)
     all_x=[]
     all_y=[]
+    edge_length=[]
     for meshid in range(len(meshfile_list)):
         f=open(meshfile_list[meshid])
         lines=f.readlines()
@@ -27,6 +28,8 @@ def show_multiple_mesh_2d(meshfile_list,color_list):
             y1=float(line[1])
             x2=float(line[2])
             y2=float(line[3])
+            edge_length.append(np.sqrt((x1-x2)*(x1-x2)+(y1-y2)*(y1-y2)))
+            edge_length=[min(edge_length),max(edge_length)]
             seg=[[x1,y1],[x2,y2]]
             segs.append(seg)
             all_x.append(x1)
@@ -36,6 +39,7 @@ def show_multiple_mesh_2d(meshfile_list,color_list):
             all_x=[min(all_x),max(all_x)]
             all_y=[min(all_y),max(all_y)]
         ax.add_collection(LineCollection(segs,colors=color_list[meshid]))
+        print(meshfile_list[meshid]+" edges: max="+str(max(edge_length))+" min="+str(min(edge_length)))
     ax.set_xlim(min(all_x)-0.1*abs(min(all_x)), max(all_x)+0.1*abs(max(all_x)))
     ax.set_ylim(min(all_y)-0.1*abs(min(all_y)), max(all_y)+0.1*abs(max(all_y)))
     plt.show()
